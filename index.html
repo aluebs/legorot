@@ -3,9 +3,24 @@
   <head>
     <title>LegoRot</title>
     <script>
+      function radiusSquared(a, b) {
+        return Math.pow(a, 2) + Math.pow(b, 2);
+      }
+
+      function gcd(a, b) {
+        while(b) {
+          var bb = b;
+          b = a % b;
+          a = bb;
+        }
+        return a;
+      }
+
       function calculateAngles(form) {
-        document.getElementById("result").innerHTML =
-          form.height.value * form.width.value;
+        var height = form.height.value;
+        var width = form.width.value;
+        var connections = form.connections.value;
+        document.getElementById("result").innerHTML = gcd(height, width);
       }
     </script>
   </head>
