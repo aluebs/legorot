@@ -20,7 +20,27 @@
         var height = form.height.value;
         var width = form.width.value;
         var connections = form.connections.value;
-        document.getElementById("result").innerHTML = gcd(height, width);
+
+        var inter_width = 2 * width;
+        var inter_height = 2 * height;
+        var max_radius =
+          Math.ceil(Math.sqrt(radiusSquared(inter_width, inter_height)));
+
+        var radius_map = {};
+        for (var i = 0; i <= max_radius; ++i) {
+          for (var j = 0; j <= max_radius; ++j) {
+            var radius = radiusSquared(i, j);
+            if (radius > 0 && radius <= Math.pow(max_radius, 2)) {
+              if (radius in radius_map) {
+                radius_map[radius].add([i, j]);
+              } else {
+                radius_map[radius] = new Set([[i, j]]);
+              }
+            }
+          }
+        }
+
+        console.log(radius_map);
       }
     </script>
   </head>
@@ -30,21 +50,20 @@
       <table>
         <tr>
           <td><label for="height">Height:</label></td>
-          <td><input type="number" id="height" value=10></td>
+          <td><input type="number" id="height" value=2></td>
         </tr>
         <tr>
           <td><label for="width">Width:</label></td>
-          <td><input type="number" id="width" value=10></td>
+          <td><input type="number" id="width" value=2></td>
         </tr>
         <tr>
           <td><label for="connections">Connections:</label></td>
-          <td><input type="number" id="connections" value=10></td>
+          <td><input type="number" id="connections" value=2></td>
         </tr>
         <tr>
           <td><input type="submit" value="Submit"></td>
         </tr>
       </table>
     </form>
-    <p id="result"/>
   </body>
 </html>
