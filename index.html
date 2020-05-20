@@ -7,7 +7,7 @@
         return Math.pow(a, 2) + Math.pow(b, 2);
       }
 
-      function gcd(a, b) {
+      function GCD(a, b) {
         while(b) {
           var bb = b;
           b = a % b;
@@ -19,7 +19,7 @@
       function calculateAngles(form) {
         var height = form.height.value;
         var width = form.width.value;
-        var connections = form.connections.value;
+        var min_connections = form.min_connections.value;
 
         var inter_width = 2 * width;
         var inter_height = 2 * height;
@@ -40,7 +40,42 @@
           }
         }
 
-        console.log(radius_map);
+        var angle_map = {};
+        for (var radius in radius_map) {
+          var positions = radius_map[radius];
+          for (var pos_fix of positions) {
+            for (var pos_rot of positions) {
+              if (pos_rot[0] <= inter_width && pos_rot[1] <= inter_height) {
+                var pos_wrp = pos_fix;
+                if (pos_wrp[0] > pos_rot[0]) {
+                  pos_wrp = [-pos_wrp[1], pos_wrp[0]];
+                }
+                var angle = [radiusSquared(pos_rot[0] - pos_wrp[0],
+                                           pos_rot[1] - pos_wrp[1]),
+                             4 * radius];
+                var gcd = GCD(angle[0], angle[1]);
+                if (gcd) {
+                  angle = [angle[0] / gcd, angle[1] / gcd];
+                }
+                if (angle in angle_map) {
+                  angle_map[angle].add(pos_rot);
+                } else {
+                  angle_map[angle] = new Set([pos_rot]);
+                }
+              }
+            }
+          }
+        }
+
+        for (var angle in angle_map) {
+          var connections = angle_map[angle];
+          connections.add([0, 0]);
+          if (angle == [1, 2] || connections.size < min_connections) {
+            delete angle_map[angle];
+          }
+        }
+
+        console.log(angle_map);
       }
     </script>
   </head>
@@ -57,8 +92,8 @@
           <td><input type="number" id="width" value=2></td>
         </tr>
         <tr>
-          <td><label for="connections">Connections:</label></td>
-          <td><input type="number" id="connections" value=2></td>
+          <td><label for="min_connections">Min Connections:</label></td>
+          <td><input type="number" id="min_connections" value=5></td>
         </tr>
         <tr>
           <td><input type="submit" value="Submit"></td>
