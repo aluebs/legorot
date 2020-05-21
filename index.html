@@ -67,38 +67,58 @@
           }
         }
 
+        var num_angles = 0;
         for (var angle in angle_map) {
           var connections = angle_map[angle];
           connections.add([0, 0]);
           if (angle == [1, 2] || connections.size < min_connections) {
             delete angle_map[angle];
+          } else {
+            ++num_angles;
           }
         }
 
+        document.getElementById("angle").max = num_angles - 1;
+
         console.log(angle_map);
+      }
+
+      function selectAngle(index) {
+        document.getElementById("angle_text").textContent = index;
       }
     </script>
   </head>
   <body>
     <h1>LegoRot</h1>
-    <form action="javascript:calculateAngles(this);">
-      <table>
-        <tr>
-          <td><label for="height">Height:</label></td>
-          <td><input type="number" id="height" value=2></td>
-        </tr>
-        <tr>
-          <td><label for="width">Width:</label></td>
-          <td><input type="number" id="width" value=2></td>
-        </tr>
-        <tr>
-          <td><label for="min_connections">Min Connections:</label></td>
-          <td><input type="number" id="min_connections" value=5></td>
-        </tr>
-        <tr>
-          <td><input type="submit" value="Submit"></td>
-        </tr>
-      </table>
-    </form>
+    <div>
+      <form action="javascript:calculateAngles(this);">
+        <table>
+          <tr>
+            <td><label for="height">Height:</label></td>
+            <td><input type="number" id="height" value=2></td>
+          </tr>
+          <tr>
+            <td><label for="width">Width:</label></td>
+            <td><input type="number" id="width" value=2></td>
+          </tr>
+          <tr>
+            <td><label for="min_connections">Min Connections:</label></td>
+            <td><input type="number" id="min_connections" value=5></td>
+          </tr>
+          <tr>
+            <td><input type="submit" value="Calculate Angles"></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    <div>
+      <form>
+        <label for="angle">Angle:</label>
+        <span id="angle_text">0</span>
+        <input type="range" id="angle" max="0" value="0"
+            oninput="selectAngle(this.value)"
+            onchange="selectAngle(this.value)">
+      </form>
+    </div>
   </body>
 </html>
