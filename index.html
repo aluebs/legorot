@@ -16,6 +16,10 @@
         return a;
       }
 
+      function angle2Degrees(angle) {
+        return 360 * Math.asin(Math.sqrt(angle[0] / angle[1])) / Math.PI;
+      }
+
       function calculateAngles(form) {
         var height = form.height.value;
         var width = form.width.value;
@@ -67,31 +71,37 @@
           }
         }
 
-        var num_angles = 0;
+        angle_list = [];
         for (var angle in angle_map) {
           var connections = angle_map[angle];
           connections.add([0, 0]);
-          if (angle == [1, 2] || connections.size < min_connections) {
-            delete angle_map[angle];
-          } else {
-            ++num_angles;
+          if (angle != [1, 2] && connections.size >= min_connections) {
+            angle_list.push([angle.split(","), connections]);
           }
         }
 
-        document.getElementById("angle").max = num_angles - 1;
+        angle_list.sort(function compare(a, b) {
+          return angle2Degrees(a[0]) - angle2Degrees(b[0]);
+        });
 
-        console.log(angle_map);
+        document.getElementById("angle").max = angle_list.length - 1;
       }
 
       function selectAngle(index) {
-        document.getElementById("angle_text").textContent = index;
+        document.getElementById("angle_text").textContent =
+            angle2Degrees(angle_list[index][0]).toFixed(1) + "°";
+      }
+
+      function initAngles() {
+        calculateAngles(document.getElementById("dimensions"));
+        selectAngle(document.getElementById("angle").value);
       }
     </script>
   </head>
-  <body>
+  <body onload="initAngles()">
     <h1>LegoRot</h1>
     <div>
-      <form action="javascript:calculateAngles(this);">
+      <form id="dimensions" action="javascript:calculateAngles(this);">
         <table>
           <tr>
             <td><label for="height">Height:</label></td>
@@ -114,10 +124,10 @@
     <div>
       <form>
         <label for="angle">Angle:</label>
-        <span id="angle_text">0</span>
         <input type="range" id="angle" max="0" value="0"
             oninput="selectAngle(this.value)"
             onchange="selectAngle(this.value)">
+        <span id="angle_text"></span>
       </form>
     </div>
   </body>
