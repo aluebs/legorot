@@ -84,7 +84,10 @@
           return angle2Degrees(a[0]) - angle2Degrees(b[0]);
         });
 
-        document.getElementById("angle").max = angle_list.length - 1;
+        angle_range = document.getElementById("angle");
+        angle_range.max = angle_list.length - 1;
+        angle_range.value = 0;
+        selectAngle(angle_range.value);
       }
 
       function selectAngle(index) {
