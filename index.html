@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>LegoRot</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
       function radiusSquared(a, b) {
         return Math.pow(a, 2) + Math.pow(b, 2);
@@ -27,7 +28,7 @@
 
         var inter_width = 2 * width;
         var inter_height = 2 * height;
-        var max_radius =
+        max_radius =
           Math.ceil(Math.sqrt(radiusSquared(inter_width, inter_height)));
 
         var radius_map = {};
@@ -93,6 +94,54 @@
       function selectAngle(index) {
         document.getElementById("angle_text").textContent =
             angle2Degrees(angle_list[index][0]).toFixed(1) + "°";
+        var mode = "lines";
+        var line = {
+          color: "rgb(35, 120, 65)",
+          size: 3
+        };
+        var data = [];
+        data.push({
+          x: [0, max_radius],
+          y: [-0.5, -0.5],
+          mode: mode,
+          line: line
+        });
+        data.push({
+          x: [0, max_radius],
+          y: [max_radius + 0.5, max_radius + 0.5],
+          mode: mode,
+          line: line
+        });
+        data.push({
+          x: [-0.5, -0.5],
+          y: [0, max_radius],
+          mode: mode,
+          line: line
+        });
+        data.push({
+          x: [max_radius + 0.5, max_radius + 0.5],
+          y: [0, max_radius],
+          mode: mode,
+          line: line
+        });
+        var axis = {
+          range: [-1, max_radius + 1],
+          showgrid: false,
+          zeroline: false,
+          showline: false,
+          autotick: false,
+          ticks: "",
+          showticklabels: false
+        }
+        Plotly.newPlot("plot", data,
+            {
+              showlegend: false,
+              xaxis: axis,
+              yaxis: axis
+            },
+            {
+              staticPlot: true
+            });
       }
 
       function initAngles() {
@@ -133,5 +182,6 @@
         <span id="angle_text"></span>
       </form>
     </div>
+    <div id="plot" style="width:500px;height:500px;"></div>
   </body>
 </html>
