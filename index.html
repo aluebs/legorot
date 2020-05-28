@@ -94,36 +94,32 @@
       function selectAngle(index) {
         document.getElementById("angle_text").textContent =
             angle2Degrees(angle_list[index][0]).toFixed(1) + "°";
-        var mode = "lines";
         var line = {
           color: "rgb(35, 120, 65)",
-          size: 3
         };
-        var data = [];
-        data.push({
-          x: [0, max_radius],
-          y: [-0.5, -0.5],
-          mode: mode,
+        var shapes = [];
+        shapes.push({
+          type: "path",
+          path: "M 0 -0.5 Q -0.5 -0.5 -0.5 0 V " + max_radius + " Q -0.5 "
+            + (max_radius + 0.5) + " 0 " + (max_radius + 0.5) + " H "
+            + max_radius + " Q " + (max_radius + 0.5) + " " + (max_radius + 0.5)
+            + " " + (max_radius + 0.5) + " " + max_radius + " V 0 Q "
+            + (max_radius + 0.5) + " -0.5 " + max_radius + " -0.5 Z",
           line: line
         });
-        data.push({
-          x: [0, max_radius],
-          y: [max_radius + 0.5, max_radius + 0.5],
-          mode: mode,
-          line: line
-        });
-        data.push({
-          x: [-0.5, -0.5],
-          y: [0, max_radius],
-          mode: mode,
-          line: line
-        });
-        data.push({
-          x: [max_radius + 0.5, max_radius + 0.5],
-          y: [0, max_radius],
-          mode: mode,
-          line: line
-        });
+        var lego_radius = 0.3;
+        for (var i = 0; i <= max_radius; ++i) {
+          for (var j = 0; j <= max_radius; ++j) {
+            shapes.push({
+              type: "circle",
+              x0: i - lego_radius,
+              y0: j - lego_radius,
+              x1: i + lego_radius,
+              y1: j + lego_radius,
+              line: line
+            });
+          }
+        }
         var axis = {
           range: [-1, max_radius + 1],
           showgrid: false,
@@ -133,8 +129,9 @@
           ticks: "",
           showticklabels: false
         }
-        Plotly.newPlot("plot", data,
+        Plotly.newPlot("plot", [],
             {
+              shapes: shapes,
               showlegend: false,
               xaxis: axis,
               yaxis: axis
