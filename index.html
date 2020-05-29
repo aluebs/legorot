@@ -17,13 +17,17 @@
         return a;
       }
 
-      function angle2Degrees(angle) {
-        return 360 * Math.asin(Math.sqrt(angle[0] / angle[1])) / Math.PI;
+      function angle2Radians(angle) {
+        return 2 * Math.asin(Math.sqrt(angle[0] / angle[1]));
+      }
+
+      function rad2Deg(rad) {
+        return 180 * rad / Math.PI;
       }
 
       function calculateAngles(form) {
-        var height = form.height.value;
-        var width = form.width.value;
+        height = form.height.value;
+        width = form.width.value;
         var min_connections = form.min_connections.value;
 
         var inter_width = 2 * width;
@@ -82,7 +86,7 @@
         }
 
         angle_list.sort(function compare(a, b) {
-          return angle2Degrees(a[0]) - angle2Degrees(b[0]);
+          return angle2Radians(a[0]) - angle2Radians(b[0]);
         });
 
         angle_range = document.getElementById("angle");
@@ -92,36 +96,56 @@
       }
 
       function selectAngle(index) {
+        var angle = angle2Radians(angle_list[index][0]);
         document.getElementById("angle_text").textContent =
-            angle2Degrees(angle_list[index][0]).toFixed(1) + "°";
-        var line = {
+          rad2Deg(angle).toFixed(1) + "°";
+        var base_size = Math.ceil(max_radius / 2);
+        var green = {
           color: "rgb(35, 120, 65)",
+        };
+        var blue = {
+          color: "rgb(0, 85, 195)",
         };
         var shapes = [];
         shapes.push({
           type: "path",
-          path: "M 0 -0.5 Q -0.5 -0.5 -0.5 0 V " + max_radius + " Q -0.5 "
-            + (max_radius + 0.5) + " 0 " + (max_radius + 0.5) + " H "
-            + max_radius + " Q " + (max_radius + 0.5) + " " + (max_radius + 0.5)
-            + " " + (max_radius + 0.5) + " " + max_radius + " V 0 Q "
-            + (max_radius + 0.5) + " -0.5 " + max_radius + " -0.5 Z",
-          line: line
+          path: "M 0 -0.5 Q -0.5 -0.5 -0.5 0 V " + (base_size - 1) + " Q -0.5 "
+            + (base_size - 0.5) + " 0 " + (base_size - 0.5) + " H "
+            + (base_size - 1) + " Q " + (base_size - 0.5) + " "
+            + (base_size - 0.5) + " " + (base_size - 0.5) + " "
+            + (base_size - 1) + " V 0 Q " + (base_size - 0.5) + " -0.5 "
+            + (base_size - 1) + " -0.5 Z",
+          line: green
         });
         var lego_radius = 0.3;
-        for (var i = 0; i <= max_radius; ++i) {
-          for (var j = 0; j <= max_radius; ++j) {
+        for (var i = 0; i < base_size; ++i) {
+          for (var j = 0; j < base_size; ++j) {
             shapes.push({
               type: "circle",
               x0: i - lego_radius,
               y0: j - lego_radius,
               x1: i + lego_radius,
               y1: j + lego_radius,
-              line: line
+              line: green
+            });
+          }
+        }
+        for (var i = 0; i < width; ++i) {
+          for (var j = 0; j < height; ++j) {
+            var x = Math.cos(angle) * i - Math.sin(angle) * j;
+            var y = Math.sin(angle) * i + Math.cos(angle) * j;
+            shapes.push({
+              type: "circle",
+              x0: x - lego_radius,
+              y0: y - lego_radius,
+              x1: x + lego_radius,
+              y1: y + lego_radius,
+              line: blue
             });
           }
         }
         var axis = {
-          range: [-1, max_radius + 1],
+          range: [-1, base_size + 1],
           showgrid: false,
           zeroline: false,
           showline: false,
