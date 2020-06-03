@@ -26,12 +26,12 @@
       }
 
       function calculateAngles(form) {
-        height = form.height.value;
-        width = form.width.value;
+        single_height = Number(form.height.value);
+        single_width = Number(form.width.value);
         var min_connections = form.min_connections.value;
 
-        var inter_width = 2 * width;
-        var inter_height = 2 * height;
+        var inter_width = 2 * single_width;
+        var inter_height = 2 * single_height;
         max_radius =
           Math.ceil(Math.sqrt(radiusSquared(inter_width, inter_height)));
 
@@ -109,8 +109,10 @@
         var shapes = [];
         shapes.push({
           type: "path",
-          path: "M 0 -0.5 Q -0.5 -0.5 -0.5 0 V " + (base_size - 1) + " Q -0.5 "
-            + (base_size - 0.5) + " 0 " + (base_size - 0.5) + " H "
+          path: "M " + (-base_size + 1) + " -0.5 Q " + (-base_size + 0.5)
+            + " -0.5 " + (-base_size + 0.5) + " 0 V " + (base_size - 1) + " Q "
+            + (-base_size + 0.5) + " " + (base_size - 0.5) + " "
+            + (-base_size + 1) + " " + (base_size - 0.5) + " H "
             + (base_size - 1) + " Q " + (base_size - 0.5) + " "
             + (base_size - 0.5) + " " + (base_size - 0.5) + " "
             + (base_size - 1) + " V 0 Q " + (base_size - 0.5) + " -0.5 "
@@ -118,7 +120,7 @@
           line: green
         });
         var lego_radius = 0.3;
-        for (var i = 0; i < base_size; ++i) {
+        for (var i = -base_size + 1; i < base_size; ++i) {
           for (var j = 0; j < base_size; ++j) {
             shapes.push({
               type: "circle",
@@ -130,8 +132,26 @@
             });
           }
         }
-        for (var i = 0; i < width; ++i) {
-          for (var j = 0; j < height; ++j) {
+        shapes.push({
+          type: "path",
+          path: "M " + (-0.5 * Math.cos(angle) + 0.5 * Math.sin(angle)) + " "
+            + (-0.5 * Math.sin(angle) - 0.5 * Math.cos(angle)) + " L "
+            + (-0.5 * Math.cos(angle) - (single_height - 0.5) * Math.sin(angle))
+            + " "
+            + (-0.5 * Math.sin(angle) + (single_height - 0.5) * Math.cos(angle))
+            + " L " + ((single_width - 0.5) * Math.cos(angle)
+                - (single_height - 0.5) * Math.sin(angle))
+            + " " + ((single_width - 0.5) * Math.sin(angle)
+                + (single_height - 0.5) * Math.cos(angle))
+            + " L "
+            + ((single_width - 0.5) * Math.cos(angle) + 0.5 * Math.sin(angle))
+            + " "
+            + ((single_width - 0.5) * Math.sin(angle) - 0.5 * Math.cos(angle))
+            + " Z",
+          line: blue
+        });
+        for (var i = 0; i < single_width; ++i) {
+          for (var j = 0; j < single_height; ++j) {
             var x = Math.cos(angle) * i - Math.sin(angle) * j;
             var y = Math.sin(angle) * i + Math.cos(angle) * j;
             shapes.push({
@@ -145,7 +165,7 @@
           }
         }
         var axis = {
-          range: [-1, base_size + 1],
+          range: [-base_size, base_size],
           showgrid: false,
           zeroline: false,
           showline: false,
@@ -167,7 +187,6 @@
 
       function initAngles() {
         calculateAngles(document.getElementById("dimensions"));
-        selectAngle(document.getElementById("angle").value);
       }
     </script>
   </head>
