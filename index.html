@@ -36,8 +36,8 @@
           Math.ceil(Math.sqrt(radiusSquared(inter_width, inter_height)));
 
         var radius_map = {};
-        for (var i = 0; i <= max_radius; ++i) {
-          for (var j = 0; j <= max_radius; ++j) {
+        for (var i = 0; i < max_radius; ++i) {
+          for (var j = 0; j < max_radius; ++j) {
             var radius = radiusSquared(i, j);
             if (radius > 0 && radius <= Math.pow(max_radius, 2)) {
               if (radius in radius_map) {
@@ -54,7 +54,8 @@
           var positions = radius_map[radius];
           for (var pos_fix of positions) {
             for (var pos_rot of positions) {
-              if (pos_rot[0] <= inter_width && pos_rot[1] <= inter_height) {
+              if (pos_rot[0] < inter_width - 1
+                  && pos_rot[1] < inter_height - 1) {
                 var pos_wrp = pos_fix;
                 if (pos_wrp[0] > pos_rot[0]) {
                   pos_wrp = [-pos_wrp[1], pos_wrp[0]];
@@ -67,9 +68,9 @@
                   angle = [angle[0] / gcd, angle[1] / gcd];
                 }
                 if (angle in angle_map) {
-                  angle_map[angle].add(pos_rot);
+                  angle_map[angle].add(pos_wrp);
                 } else {
-                  angle_map[angle] = new Set([pos_rot]);
+                  angle_map[angle] = new Set([pos_wrp]);
                 }
               }
             }
@@ -105,6 +106,9 @@
         };
         var blue = {
           color: "rgb(0, 85, 195)",
+        };
+        var red = {
+          color: "rgb(201, 26, 9)",
         };
         var shapes = [];
         shapes.push({
@@ -164,6 +168,16 @@
             });
           }
         }
+        for (var connection of angle_list[index][1]) {
+          shapes.push({
+            type: "circle",
+            x0: connection[0] / 2 - lego_radius,
+            y0: connection[1] / 2 - lego_radius,
+            x1: connection[0] / 2 + lego_radius,
+            y1: connection[1] / 2 + lego_radius,
+            line: red
+          });
+        }
         var axis = {
           range: [-base_size, base_size],
           showgrid: false,
@@ -205,7 +219,7 @@
           </tr>
           <tr>
             <td><label for="min_connections">Min Connections:</label></td>
-            <td><input type="number" id="min_connections" value=5></td>
+            <td><input type="number" id="min_connections" value=2></td>
           </tr>
           <tr>
             <td><input type="submit" value="Calculate Angles"></td>
@@ -222,6 +236,6 @@
         <span id="angle_text"></span>
       </form>
     </div>
-    <div id="plot" style="width:500px;height:500px;"></div>
+    <div id="plot" style="width:800px;height:800px;"></div>
   </body>
 </html>
